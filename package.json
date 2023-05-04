@@ -34,10 +34,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GabrielaGL/DEV004-md-links"
+    "url": "git+https://github.com/GabrielaGL/DEV004-md-links-main"
   },
   "bugs": {
-    "url": "https://github.com/GabrielaGL/DEV004-md-links/issues"
+    "url": "https://github.com/GabrielaGL/DEV004-md-links-main/issues"
   },
-  "homepage": "https://github.com/GabrielaGL/DEV004-md-links#readme"
+  "homepage": "https://github.com/GabrielaGL/DEV004-md-links-main#readme"
 }
