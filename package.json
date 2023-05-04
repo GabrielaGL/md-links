@@ -1,0 +1,32 @@
+{
+  "name": "@gabrielagl/dev004-md-links",
+  "version": "1.0.1",
+  "description": "Command line tool (CLI) that through Node.js reads and analyzes files in Markdown format, to verify the links they contain and report some statistics",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=16.x"
+  },
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "keywords": [
+    ".md",
+    "markdown",
+    "links",
+    "reader"
+  ],
+  "author": "GabrielaGL",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.21.5",
+    "@babel/preset-env": "^7.21.5",
+    "babel-jest": "^29.5.0",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "axios": "^1.3.6",
+    "chalk": "^4.1.2",
+    "node-fetch": "^2.6.9"
+  }
+}
