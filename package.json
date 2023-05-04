@@ -1,5 +1,5 @@
 {
-  "name": "@gabrielagl/dev004-md-links",
+  "name": "@gabrielagl/md-links",
   "version": "1.0.1",
   "description": "Command line tool (CLI) that through Node.js reads and analyzes files in Markdown format, to verify the links they contain and report some statistics",
   "main": "index.js",
@@ -34,10 +34,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GabrielaGL/DEV004-md-links-main"
+    "url": "git+https://github.com/GabrielaGL/md-links"
   },
   "bugs": {
-    "url": "https://github.com/GabrielaGL/DEV004-md-links-main/issues"
+    "url": "https://github.com/GabrielaGL/md-links/issues"
   },
-  "homepage": "https://github.com/GabrielaGL/DEV004-md-links-main#readme"
+  "homepage": "https://github.com/GabrielaGL/md-links#readme"
 }
