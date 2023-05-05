@@ -1,0 +1,163 @@
+body, html {
+  height: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; /* Espacio entre el contorno del elemento y el borde */
+  background-color: #eedcff;
+  font-family: "Poppins", sans-serif;
+}
+
+.header {
+  display: flex; 
+  position: fixed; /* posicionamiento absoluto fijo */
+  top: 0px;
+  width: 100%;
+  min-height: inherit;
+  background: white;
+  align-items: center
+}
+
+.header h1 {
+  position: relative;
+  left:30px;
+}
+
+.header h2 {
+  position: relative;
+  left: 70px;
+  top: 6px;
+  font-size: 13px;
+}
+
+.header h3 {
+  position: relative;
+  left: 630px;
+  top: 6px;
+  font-size: 17px;
+  color: #f85e8e;
+}
+
+.header h4 {
+  position: relative;
+  left: 650px;
+  top: 6px;
+  font-size: 17px;
+  color: #f85e8e;
+}
+
+
+/*Estilizar cada caja de formularios */
+.formulariosDatos {
+  display: flex; /* Asegura que los elementos dentro de div se despleguen lado a lado */
+  justify-content: center;
+  align-items: center; /* Alineación predeterminada para los elementos */
+  height: 100vh;  /* vh (ventana gráfica); asegura que el formulario tenga el 100% de altura*/
+}
+
+/* Estilizar caja de formulario */
+.form {
+  background-color: white;
+  width: 400px; /* Ancho del área */
+  border-radius: 8px; /* Borde redondeado*/
+  padding: 20px 40px;
+  box-shadow: 0 10px 25px rgba(92, 99, 105, .2); /* Sombra alrededor de la caja */
+}
+
+/* Estilizar titulo del form (Datos Personales) */
+.title {
+  font-size: 40px;
+  margin-bottom: 40px;
+}
+
+/* Estilizar cada conjuto de etiqueta e input */
+.inputContainer {
+  position: relative;
+  height: 45px;
+  width: 90%;
+  margin-bottom: 17px;
+}
+
+/* Estilizar cajitas en la que se ingresa info (input) */
+.input {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  border: 1px solid #DADCE0;
+  border-radius: 7px;
+  font-size: 16px;
+  padding: 0 20px;
+  outline: none;
+  background: none;
+  z-index: 1;
+}
+
+/* Hacer que el placeholder (texto dentro del input) sea transparente */
+::placeholder {
+  color: transparent;
+}
+
+/* Estilizar las etiquetas y hacer que queden en el placeholder */
+.label {
+  position: absolute;
+  top: 15px; /* top y left mueven el texto hacia arriba en relación al contenedor */
+  left: 15px;
+  padding: 0 4px;
+  background-color: white;
+  color: #DADCE0;
+  font-size: 16px;
+  transition: 0.5s; /* Tiempo que tomará el texto en subir cuando el cursor pase encima */
+  z-index: 0; /* Etiqueta se posicione detrás de otros elementos si se superponen */
+}
+
+/* Estilizar boton */
+.submitButton {
+  display: block; /* Da espacio por encima y debajo, lo separa de otros elementos y no acepta elementos a su lado */
+  margin-left: auto;
+  padding: 15px 30px;
+  border: none;
+  background-color: #fa7ca4;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer; /* Hace que cuando pase el cursor, cambie a selección */
+  font-size: 16px;
+  margin-top: 30px;
+}
+
+/* Personalizar lo que el botón hace cuando el cursor pasa sobre él (hover) */
+.submitButton:hover {
+  background-color: #ffb1ca;
+  transform: translateY(-2px); /* Hace que el elemento se mueva, en este caso verticalmente -2 */
+}
+
+/* Indicaciones de los input y las etiquetas cuando se interactue con ellos (clic) */
+.input:focus+.label {
+  top: -7px;
+  left: 3px;
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fa7ca4;
+}
+
+/* Indicaciones para cambiar bordes de input cuando se interactue (clic) */
+.input:focus {
+  border: 2px solid #fa7ca4;
+}
+
+/* Especifica que placeholder no regrese cuando este lleno el input y que etiqueta pierda su color */
+.input:not(:placeholder-shown)+.label {
+  top: -7px;
+  left: 3px;
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+a:link, a:visited {
+  text-decoration: none;
+}

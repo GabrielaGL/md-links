@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> GYPSY </title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Letras -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+  <div class="formularioCompleto">
+    <div class="header">
+      <h1>GYPSY</h1>
+      <h2> Pagos seguros a un click de distancia </h2>
+      <h3> Iniciar Sesión </h3>
+      <h4>Contacto</h4>
+    </div>
+
+    <!-- formulario -->
+    <div class="formulariosDatos">
+      <form action="" class="form">
+        <label>
+          <h1 class="title"> Datos Personales </h1>
+        </label>
+
+        <div class="inputContainer">
+          <input type="text" class="input" placeholder="" required>
+          <label for="" class="label"> Nombre Completo </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="tel" class="input" pattern="[0-9]{10}" maxlength="10" placeholder="" required>
+          <label for="" class="label"> Numero Telefónico a 10 digitos </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="email" class="input" placeholder="" required>
+          <label for="" class="label"> Email </label>
+        </div>
+
+        <a href="#direccion"> <button type="button" class="submitButton"> Continuar </button> </a>
+
+      </form>
+    </div>
+
+    <div class="formulariosDatos">
+      <form action="" class="form" id="direccion">
+        <label>
+          <h1 class="title"> Direccion </h1>
+        </label>
+
+        <div class="inputContainer">
+          <input type="text" class="input" placeholder="" required>
+          <label for="" class="label"> Calle y Numero </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" pattern="[0-9]{5}" placeholder="" required>
+          <label for="" class="label"> Codigo Postal </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" placeholder="" required>
+          <label for="" class="label"> Colonia </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" placeholder="" required>
+          <label for="" class="label"> Ciudad o Municipio </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" placeholder="" required>
+          <label for="" class="label"> Estado de la República </label>
+        </div>
+
+        <a href="#pagos"> <button type="button" class="submitButton"> Continuar </button> </a>
+
+      </form>
+    </div>
+
+    <div class="formulariosDatos">
+      <form action="" class="form" id="pagos">
+        <label>
+          <h1 class="title"> Método de Pago </h1>
+        </label>
+
+        <div class="inputContainer">
+          <input type="text" class="input" id="cardNumber" minlength="1" maxlength="16" autocomplete="off"
+            placeholder="" required>
+          <label for="cardNumber" class="label"> Numero de Tarjeta </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" id="expiracion" maxlength="4" autocomplete="off" placeholder="" pattern="([0-9]{4}"> 
+          <label for="expiracion" class="label"> Expiracion </label>
+        </div>
+
+        <div class="inputContainer">
+          <input type="text" class="input" id="cvv" maxlength="3" autocomplete="off" placeholder="">
+          <label for="cvv" class="label"> CVV </label>
+        </div>
+
+        <label  class="terminos"> <input type="checkbox" required> Acepto términos y condiciones</label>
+        
+        <button type="button" class="submitButton" id="pago"> Validar Tarjeta </button>
+        <div id="result"> </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="index.js" type="module"></script>
+
+</body>
+
+</html>
