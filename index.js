@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 
 
 const filePath = 'examplesFiles'
@@ -62,8 +63,9 @@ function getLinks(filePath) {
   const links = [];
   const renderer = new marked.Renderer();
   renderer.link = function (href, title, text) {
-    links.push(href);
-    return `<a href="${href}" title="${title}">${text}</a>`;
+    const cleanLinks = DOMPurify.sanitize(href);
+    links.push(cleanLinks);
+    return `<a href="${cleanLinks}" title="${title}">${text}</a>`;
   }
   filePath.forEach((file) => {
     fs.readFile(file, 'utf8', (error, data) => {
