@@ -35,28 +35,18 @@ function getFiles(filePath) {
           const directoryPath = `${filePath}/${file}`;
           getFiles(directoryPath);
         })
-        getMDExt(filePath);
       }
     }
   })
-
-}
-
+};
 
 
-function getMDExt(filePath, callback) {
-  const extFile = path.extname(filePath);
-  console.log(extFile);
-  /*   const mdFiles = filePath.filter(file => extFile  === '.md');
-    const arrFiles = mdFiles.map((file) => path.join(filePath, file));
-    callback(null, arrFiles);
-    getMDExt(filePath, (error, arrFiles) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-      console.log('Archivos con extensión .md:', arrFiles);
-    }) */
+function getMDExt(filePath) {
+  const arrFiles = [];
+  if (path.extname(filePath) === '.md') {
+    arrFiles.push(filePath);
+  }
+  console.log('Archivos con extensión .md:', arrFiles);
 };
 
 
