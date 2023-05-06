@@ -15,7 +15,7 @@ function testRelativeAbsolute(filePath) {
     console.log(`La ruta absoluta es '${convertAbsolute}'.`);
     testRelativeAbsolute(convertAbsolute);
   }
-  
+
 }
 
 testRelativeAbsolute(filePath)
@@ -27,36 +27,41 @@ function getFiles(filePath) {
     } else {
       if (stats.isFile()) {
         console.log(`La ruta '${filePath}' corresponde a un archivo.`);
+        getMDExt(filePath);
       } else if (stats.isDirectory()) {
         console.log(`La ruta '${filePath}' corresponde a un directorio.`);
         const readDirec = fs.readdirSync(filePath)
-        const openFiles = readDirec.map((file) => path.join(filePath, file));
-        console.log(openFiles);
+        readDirec.forEach((file) => {
+          const directoryPath = `${filePath}/${file}`;
+          getFiles(directoryPath);
+        })
+        getMDExt(filePath);
       }
     }
   })
+
 }
 
 
-//getFiles(filePath);
 
-/* function getMDExt(filePath, callback) {
-
-  const mdFiles = filePath.filter(file => path.extname(file) === '.md');
-  const arrFiles = mdFiles.map((file) => path.join(rutaDirectorio, file));
-  callback(null, arrFiles);
-  getMDExt(filePath, (error, arrFiles) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-    console.log('Archivos con extensión .md:', arrFiles);
-  })
+function getMDExt(filePath, callback) {
+  const extFile = path.extname(filePath);
+  console.log(extFile);
+  /*   const mdFiles = filePath.filter(file => extFile  === '.md');
+    const arrFiles = mdFiles.map((file) => path.join(filePath, file));
+    callback(null, arrFiles);
+    getMDExt(filePath, (error, arrFiles) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      console.log('Archivos con extensión .md:', arrFiles);
+    }) */
 };
 
 
 
-getMDExt(filePath); */
+
 
 
 /* const readFile = fs.readFile(filePath, 'utf8', (error, data) => {
