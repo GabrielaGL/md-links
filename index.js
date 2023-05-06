@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { marked } from 'marked';
 
-const filePath = 'src/mdlinks.js'
+
+const filePath = 'examplesFiles'
 
 function testRelativeAbsolute(filePath) {
   const itsAbsolute = path.isAbsolute(filePath);
@@ -48,26 +50,34 @@ function getMDExt(filePath) {
   if (path.extname(filePath) === '.md') {
     arrFiles.push(filePath);
     console.log('Archivos con extensión .md:', arrFiles);
+    getLinks(arrFiles);
   }
-  readFile(arrFiles);
 };
 
 
-function readFile(filePath) {
-  if (filePath.length <= 1) {
+function getLinks(filePath) {
+  if (filePath.length < 1) {
     console.error('No se encontraron archivos .md');
-  } else {
-    filePath.forEach((file) => {
-      fs.readFile(file, 'utf8', (error, data) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        console.log(data);
-      })
-    })
   }
+  const links = [];
+  const renderer = new marked.Renderer();
+  renderer.link = function (href, title, text) {
+    links.push(href);
+    return `<a href="${href}" title="${title}">${text}</a>`;
+  }
+  filePath.forEach((file) => {
+    fs.readFile(file, 'utf8', (error, data) => {
+      if (error) {
+        console.error(error);
+        return;
+      } else {
+        marked(data, { renderer });
+        console.log(links);
+      }
+    })
+  })
 };
+
 
 export { getFiles };
 
