@@ -1,68 +1,85 @@
 import fs from 'fs';
 import path from 'path';
+import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 
 
-/* function mdLinks(path, options) {
-  return new Promise((resolve, reject) => {
+//const filePath = 'examplesFiles'
 
-  })
-} */
+function testRelativeAbsolute(filePath) {
+  const itsAbsolute = path.isAbsolute(filePath);
+  if (!filePath) {
+    console.error("La ruta no es válida. Intenta con una ruta válida");
+  }
+  else if (itsAbsolute) {
+    console.log(`La ruta '${filePath}' es absoluta.`);
+    //getFiles(filePath);
+  } else {
+    console.log(`La ruta '${filePath}' es relativa.`);
+    const convertAbsolute = path.resolve(filePath);
+    console.log(`La ruta absoluta es '${convertAbsolute}'.`);
+    testRelativeAbsolute(convertAbsolute);
+  }
+
+}
 
 
-
-
-
-/* function getFile(pathname) {
-  fs.stat(pathname, (error, stats) => {
+function getFiles(filePath) {
+  fs.stat(filePath, (error, stats) => {
     if (error) {
-      reject(error);
-    } else if (stats.isDirectory()) {
-      console.log(`${pathname} es un directorio`);
-      fs.readdir
-      resolve('directorio');
-    } else if (stats.isFile()) {
-      console.log(`${pathname} es un archivo`);
-      resolve('archivo');
+      console.error(`Error al comprobar la ruta '${filePath}': ${error.code}`);
     } else {
-      console.log(`${pathname} no es ni un archivo ni un directorio`);
-      resolve('desconocido');
-    }
-  });
-} */
-
-
-/* function getFile(path) {
-  return new Promise((resolve, reject) => {
-    fs.stat(path, (error, stats) => {
-      if (error) {
-        reject(error);
+      if (stats.isFile()) {
+        console.log(`La ruta '${filePath}' corresponde a un archivo.`);
+        getMDExt(filePath);
       } else if (stats.isDirectory()) {
-        console.log(`${path} es un directorio`);
-        fs.readdir(path, (error, files) => {
-          if (error) {
-            reject(error);
-          } else {
-            Promise.all(files.map(file => analizarPath(`${path}/${file}`)))
-              .then(() => resolve())
-              .catch(error => reject(error));
-          }
-        });
-      } else if (stats.isFile()) {
-        console.log(`${path} es un archivo`);
-        resolve();
-      } else {
-        console.log(`${path} no es ni un archivo ni un directorio`);
-        resolve();
+        console.log(`La ruta '${filePath}' corresponde a un directorio.`);
+        const readDirec = fs.readdirSync(filePath)
+        readDirec.forEach((file) => {
+          const directoryPath = `${filePath}/${file}`;
+          //getFiles(directoryPath);
+        })
       }
-    });
-  });
-} */
+    }
+  })
+};
 
 
+function getMDExt(filePath) {
+  const arrFiles = [];
+  if (path.extname(filePath) === '.md') {
+    arrFiles.push(filePath);
+    console.log('Archivos con extensión .md:', arrFiles);
+    //getLinks(arrFiles);
+  }
+};
 
 
-/* function getExtension(path) {
+function getLinks(filePath) {
+  if (filePath.length < 1) {
+    console.error('No se encontraron archivos .md');
+  }
+  const links = [];
+  const renderer = new marked.Renderer();
+  renderer.link = function (href, title, text) {
+    const cleanLinks = DOMPurify.sanitize(href);
+    links.push(cleanLinks);
+    return `<a href="${cleanLinks}" title="${title}">${text}</a>`;
+  }
+  filePath.forEach((file) => {
+    fs.readFile(file, 'utf8', (error, data) => {
+      if (error) {
+        console.error(error);
+        return;
+      } else {
+        marked(data, { renderer });
+        console.log(links);
+      }
+    })
+  })
+};
 
-} */
+
+export { testRelativeAbsolute, getFiles, getMDExt, getLinks };
 
 
