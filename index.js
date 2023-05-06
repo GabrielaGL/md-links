@@ -1,12 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
-const filePath = 'examplesFiles'
+const filePath = ''
 
 function testRelativeAbsolute(filePath) {
   const itsAbsolute = path.isAbsolute(filePath);
-
-  if (itsAbsolute) {
+  if (!filePath) {
+    console.error("La ruta no es válida. Intenta con una ruta válida");
+  }
+  else if (itsAbsolute) {
     console.log(`La ruta '${filePath}' es absoluta.`);
     getFiles(filePath);
   } else {
@@ -45,8 +47,8 @@ function getMDExt(filePath) {
   const arrFiles = [];
   if (path.extname(filePath) === '.md') {
     arrFiles.push(filePath);
+    console.log('Archivos con extensión .md:', arrFiles);
   }
-  console.log('Archivos con extensión .md:', arrFiles);
 };
 
 
