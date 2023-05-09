@@ -1,4 +1,5 @@
-import fs from 'node:fs/promises';
+import fs from 'fs'
+import fsp from 'node:fs/promises';
 import path from 'path';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
@@ -39,6 +40,7 @@ function testRelativeAbsolute(filePath) {
 
 
 function getFiles(filePath) {
+	console.log('Entro');
 	fs.stat(filePath, (error, stats) => {
 		if (error) {
 			console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`));
@@ -80,17 +82,19 @@ function getLinks(filePath, options) {
 		const cleanLinks = DOMPurify.sanitize(href);
 		checkLink(cleanLinks);
 		//console.log(`<a href="${cleanLinks}" title="${title}">${text}</a>`);
-		console.group();
+		console.log({cleanLinks, text, filePath});
+		//return {cleanLinks, text, filePath}
+		/* console.group();
 		console.log(hrefChalk(' href '), hrefText(cleanLinks.slice(0, 50)));
 		console.log(textChalk(' text '), textText(text));
 		console.log(fileChalk(' file '), fileText(filePath.slice(0, 50)));
 		console.log(blankSpace("espacio"));
-		console.groupEnd();
+		console.groupEnd(); */
 
 
 	}
 	filePath.forEach((file) => {
-		fs.readFile(file, 'utf8').then((data) => {
+		fsp.readFile(file, 'utf8').then((data) => {
 				marked(data, { renderer });
 				//console.log(links);
 		}).catch((error) => {
