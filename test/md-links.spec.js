@@ -42,4 +42,9 @@ describe('checkLink', () => {
     const result = await checkLink('https://www.thislinkdoesnotexist.com');
     expect(result).toBe(false);
   });
+
+  it('should return an error for an invalid link', async () => {
+    const result = await checkLink('');
+    expect(result).toBe(false);
+  });
 });
