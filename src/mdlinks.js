@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs/promises';
 import path from 'path';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
@@ -6,8 +6,6 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 
-const filePath = 'examplesFiles'
-const options = '--validate'
 const renderer = new marked.Renderer();
 
 const error = chalk.bold.red;
@@ -24,35 +22,32 @@ const fail = chalk.bgHex('#C60000').bold;
 const blankSpace = chalk.hidden;
 
 
-
-function testRelativeAbsolute(filePath, options) {
+function testRelativeAbsolute(filePath) {
 	const itsAbsolute = path.isAbsolute(filePath);
 	if (!filePath) {
-		console.error(error("La ruta no es válida. Intenta con una ruta válida"));
+		console.error(chalk.bold.red("La ruta no es válida. Intenta con una ruta válida"));
 	}
 	else if (itsAbsolute) {
+		//getFiles(filePath)
 		return itsAbsolute;
 	} else {
-		//console.log(`La ruta '${filePath}' es relativa.`);
 		const convertAbsolute = path.resolve(filePath);
 		console.log(`La ruta absoluta es '${convertAbsolute}'.`);
-		testRelativeAbsolute(convertAbsolute);
+		return convertAbsolute;
 	}
 };
 
-testRelativeAbsolute(filePath)
 
-function getFiles(filePath, options) {
+function getFiles(filePath) {
 	fs.stat(filePath, (error, stats) => {
 		if (error) {
-			console.error(error(`Error al comprobar la ruta '${filePath}': ${error.code}`));
+			console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`));
 		} else {
 			if (stats.isFile()) {
-				//console.log(`La ruta '${filePath}' corresponde a un archivo.`);
-				return filePath;
-				//return stats
+				//getMDExt(filePath)
+				console.log(filePath);
+				//return filePath;
 			} else if (stats.isDirectory()) {
-				//console.log(`La ruta '${filePath}' corresponde a un directorio.`);
 				const readDirec = fs.readdirSync(filePath)
 				readDirec.forEach((file) => {
 					const directoryPath = `${filePath}/${file}`;
@@ -61,14 +56,15 @@ function getFiles(filePath, options) {
 			}
 		}
 	})
-};
+}; 
 
 
-function getMDExt(filePath, options) {
+function getMDExt(filePath) {
 	const arrFiles = [];
 	if (path.extname(filePath) === '.md') {
 		arrFiles.push(filePath);
-		return arrFiles;
+		getLinks(arrFiles)
+		//return arrFiles;
 	}
 	else {
 		return false
@@ -78,47 +74,48 @@ function getMDExt(filePath, options) {
 
 function getLinks(filePath, options) {
 	if (filePath.length < 1) {
-		console.error(error('No se encontraron archivos .md'));
+		console.error(chalk.bold.red('No se encontraron archivos .md'));
 	}
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
+		checkLink(cleanLinks);
 		//console.log(`<a href="${cleanLinks}" title="${title}">${text}</a>`);
-	/* 	console.group();
+		console.group();
 		console.log(hrefChalk(' href '), hrefText(cleanLinks.slice(0, 50)));
 		console.log(textChalk(' text '), textText(text));
 		console.log(fileChalk(' file '), fileText(filePath.slice(0, 50)));
 		console.log(blankSpace("espacio"));
-		console.groupEnd(); */
-		//checkLink(cleanLinks);
+		console.groupEnd();
+
 
 	}
 	filePath.forEach((file) => {
-		fs.readFile(file, 'utf8', (error, data) => {
-			if (error) {
-				console.error(error(`No se pudieron leer los archivos. Error: ${error.code}`));
-				return;
-			} else {
+		fs.readFile(file, 'utf8').then((data) => {
 				marked(data, { renderer });
 				//console.log(links);
-			}
+		}).catch((error) => {
+				console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
+				return;
 		})
 	})
 };
 
 
 function checkLink(url) {
-  return fetch(url, { method: 'HEAD' })
-    .then(response => {
-      if (response.ok) {
-        return true // El link funciona
-      } else {
-        return false; // El link no funciona
-      }
-    })
-    .catch(error => {
-      console.error((`Error al comprobar el link ${url}: ${error}`));
-      return false;
-    });
+	return fetch(url, { method: 'HEAD' })
+		.then(response => {
+			if (response.ok) {
+				return true // El link funciona
+			} else {
+				return false; // El link no funciona
+			}
+		})
+		.catch(error => {
+			console.error(chalk.bold.red(`Error al comprobar el link ${url}: ${error}`));
+			return false;
+		});
 };
 
-export { testRelativeAbsolute, getFiles, getMDExt, checkLink }
+
+
+export { testRelativeAbsolute, getFiles, getMDExt, getLinks, checkLink }
