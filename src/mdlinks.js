@@ -29,12 +29,13 @@ function testRelativeAbsolute(filePath) {
 		console.error(chalk.bold.red("La ruta no es válida. Intenta con una ruta válida"));
 	}
 	else if (itsAbsolute) {
-		//getFiles(filePath)
-		return itsAbsolute;
+		getFiles(filePath)
+		//return itsAbsolute;
 	} else {
 		const convertAbsolute = path.resolve(filePath);
 		console.log(`La ruta absoluta es '${convertAbsolute}'.`);
-		return convertAbsolute;
+		//return convertAbsolute;
+		testRelativeAbsolute(convertAbsolute)
 	}
 };
 
@@ -46,7 +47,7 @@ function getFiles(filePath) {
 			console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`));
 		} else {
 			if (stats.isFile()) {
-				//getMDExt(filePath)
+				getMDExt(filePath)
 				console.log(filePath);
 				//return filePath;
 			} else if (stats.isDirectory()) {
@@ -74,13 +75,13 @@ function getMDExt(filePath) {
 };
 
 
-function getLinks(filePath, options) {
+function getLinks(filePath) {
 	if (filePath.length < 1) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
 	}
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
-		checkLink(cleanLinks);
+		//console.log(cleanLinks);
 		//console.log(`<a href="${cleanLinks}" title="${title}">${text}</a>`);
 		console.log({cleanLinks, text, filePath});
 		//return {cleanLinks, text, filePath}
@@ -106,19 +107,23 @@ function getLinks(filePath, options) {
 
 
 function checkLink(url) {
-	return fetch(url, { method: 'HEAD' })
+	return new Promise((resolve, reject) => {
+	  fetch(url, { method: 'HEAD' })
 		.then(response => {
-			if (response.ok) {
-				return true // El link funciona
-			} else {
-				return false; // El link no funciona
-			}
+		  if (response.ok) {
+			resolve(true); // El link funciona
+		  } else {
+			resolve(false); // El link no funciona
+		  }
 		})
 		.catch(error => {
-			console.error(chalk.bold.red(`Error al comprobar el link ${url}: ${error}`));
-			return false;
+		  console.error(`Error al comprobar el link ${url}: ${error}`);
+		  reject(false);
 		});
-};
+	});
+  }
+
+
 
 
 
