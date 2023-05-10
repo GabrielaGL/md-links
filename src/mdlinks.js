@@ -43,7 +43,7 @@ function getFiles(filePath) {
 			console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`));
 		} else {
 			if (stats.isFile()) {
-				return filePath;
+				getMDExt(filePath)
 			} else if (stats.isDirectory()) {
 				const readDirec = fs.readdirSync(filePath)
 				readDirec.forEach((file) => {
@@ -61,7 +61,9 @@ function getMDExt(filePath) {
 	if (path.extname(filePath) === '.md') {
 		arrFiles.push(filePath);
 		getLinks(arrFiles)
+		//console.log(arrFiles);
 		//return arrFiles;
+		
 	}
 	else {
 		return false
@@ -117,8 +119,12 @@ function checkLink(url) {
 	});
 }
 
+function mdLinks(filePath, options) {
+	const absolutePath = testRelativeAbsolute(filePath)
+	getFiles(absolutePath);
+	//console.log(getFiles(absolutePath));
+}
 
 
 
-
-export { testRelativeAbsolute, getFiles, getMDExt, getLinks, checkLink }
+export { testRelativeAbsolute, getFiles, getMDExt, getLinks, checkLink, mdLinks }
