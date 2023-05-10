@@ -1,10 +1,11 @@
-import fs from 'fs'
+import fs, { link } from 'fs'
 import fsp from 'node:fs/promises';
 import path from 'path';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
+import { log } from 'console';
 
 
 const renderer = new marked.Renderer();
@@ -63,7 +64,7 @@ function getMDExt(filePath) {
 		getLinks(arrFiles)
 		//console.log(arrFiles);
 		//return arrFiles;
-		
+
 	}
 	else {
 		return false
@@ -71,15 +72,17 @@ function getMDExt(filePath) {
 };
 
 
-function getLinks(filePath) {
+function getLinks(filePath, options) {
 	if (filePath.length < 1) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
 	}
+	
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
-		//console.log(cleanLinks);
-		//console.log(`<a href="${cleanLinks}" title="${title}">${text}</a>`);
-		console.log({ cleanLinks, text, filePath });
+		const pruebaOjs = {cleanLinks, text, filePath}
+		checkLink(pruebaOjs).then(resp=>console.log(resp))
+		
+		
 		//return {cleanLinks, text, filePath}
 		/* console.group();
 		console.log(hrefChalk(' href '), hrefText(cleanLinks.slice(0, 50)));
@@ -87,13 +90,10 @@ function getLinks(filePath) {
 		console.log(fileChalk(' file '), fileText(filePath.slice(0, 50)));
 		console.log(blankSpace("espacio"));
 		console.groupEnd(); */
-
-
 	}
 	filePath.forEach((file) => {
 		fsp.readFile(file, 'utf8').then((data) => {
 			marked(data, { renderer });
-			//console.log(links);
 		}).catch((error) => {
 			console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
 			return;
@@ -103,25 +103,39 @@ function getLinks(filePath) {
 
 
 function checkLink(url) {
+	// return 'dentro'
 	return new Promise((resolve, reject) => {
-		fetch(url, { method: 'HEAD' })
+		fetch(url.cleanLinks, { method: 'HEAD' })
 			.then(response => {
-				if (response.ok) {
-					resolve(true); // El link funciona
+				if (response.status === 200) {
+					url.boolean = true; // El link funciona
+					url.statustext === response.status
 				} else {
-					resolve(false); // El link no funciona
+					url.boolean =  false; // El link no funciona
+					url.statustext === response.statusTextclear
+				
 				}
+				resolve(url)
 			})
 			.catch(error => {
 				console.error(`Error al comprobar el link ${url}: ${error}`);
-				reject(false);
+				return false;
 			});
 	});
 }
 
+
+
 function mdLinks(filePath, options) {
 	const absolutePath = testRelativeAbsolute(filePath)
-	getFiles(absolutePath);
+	getFiles(absolutePath)
+/* 	return new Promise((return, reject) => {
+		
+			.then(links => {
+				resolve(console.log(links));
+			})
+	}) */
+
 	//console.log(getFiles(absolutePath));
 }
 

@@ -1,12 +1,7 @@
-import { testRelativeAbsolute, getFiles, getMDExt, getLinks } from "./src/mdlinks.js";
+import { testRelativeAbsolute, getFiles, getMDExt, getLinks, mdLinks} from "./src/mdlinks.js";
 
 const filePath = process.argv[2];
-//const options = [process.argv[3], process.argv[4]];
+const options = process.argv[3];
 
-
-const absolutePath = testRelativeAbsolute(filePath)
-//getFiles(absolutePath);
-
-getFiles(absolutePath)
-	
+mdLinks(filePath, options)
 
