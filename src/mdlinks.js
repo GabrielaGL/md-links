@@ -1,11 +1,10 @@
-import fs, { link } from 'fs'
+import fs from 'fs'
 import fsp from 'node:fs/promises';
 import path from 'path';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import { log } from 'console';
 
 
 const renderer = new marked.Renderer();
@@ -33,112 +32,169 @@ function testRelativeAbsolute(filePath) {
 	while (!path.isAbsolute(resolvedPath)) {
 		resolvedPath = path.resolve(resolvedPath);
 	}
-	console.log(resolvedPath);
+	//console.log('Este es resolved path', resolvedPath);
 	return resolvedPath;
 }
 
 
-function getFiles(filePath) {
-	fs.stat(filePath, (error, stats) => {
-		if (error) {
-			console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`));
-		} else {
-			if (stats.isFile()) {
-				getMDExt(filePath)
-			} else if (stats.isDirectory()) {
-				const readDirec = fs.readdirSync(filePath)
-				readDirec.forEach((file) => {
-					const directoryPath = `${filePath}/${file}`;
-					getFiles(directoryPath);
-				})
+function testPath(filePath) {
+	return new Promise((resolve, reject) => {
+		fs.stat(filePath, (error, stats) => {
+			if (error) {
+				reject(console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`)));
+			} else {
+				//console.log(stats);
+				resolve(stats)
 			}
-		}
+		})
 	})
+
+}
+
+
+function getFiles(filePath, arrFiles) {
+	return new Promise((resolve, reject) => {
+		testPath(filePath)
+			.then((stats) => {
+				if (stats.isFile()) {
+					//resolve(filePath)
+					if (path.extname(filePath) === '.md') {
+						arrFiles.push(filePath);
+						//
+					}
+					resolve()
+				} else if (stats.isDirectory()) {
+					const readDirec = fs.readdirSync(filePath)
+					const getFilesPromises = [];
+					readDirec.forEach((file) => {
+						const innerRoutePath = `${filePath}/${file}`;
+						getFilesPromises.push(getFiles(innerRoutePath, arrFiles));
+					})
+					Promise.all(getFilesPromises).then(() => {
+						resolve()
+					})
+
+				}
+			})
+	})
+
 };
 
 
-function getMDExt(filePath) {
+
+/* function getMDExt(filePath) {
 	const arrFiles = [];
 	if (path.extname(filePath) === '.md') {
 		arrFiles.push(filePath);
-		getLinks(arrFiles)
+		//getLinks(arrFiles)
 		//console.log(arrFiles);
-		//return arrFiles;
-
+		return arrFiles;
 	}
-	else {
-		return false
-	}
-};
+}; */
 
 
-function getLinks(filePath, options) {
+function getLinks(filePath) {
 	if (filePath.length < 1) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
+		return;
 	}
-	
+
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
-		const pruebaOjs = {cleanLinks, text, filePath}
-		checkLink(pruebaOjs).then(resp=>console.log(resp))
-		
-		
+		const pruebaOjs = { cleanLinks, text, filePath }
+		return pruebaOjs
+
+		/* checkLink(pruebaOjs).then(resp => {
+			return resp
+		}) */
 		//return {cleanLinks, text, filePath}
-		/* console.group();
-		console.log(hrefChalk(' href '), hrefText(cleanLinks.slice(0, 50)));
-		console.log(textChalk(' text '), textText(text));
-		console.log(fileChalk(' file '), fileText(filePath.slice(0, 50)));
-		console.log(blankSpace("espacio"));
-		console.groupEnd(); */
 	}
 	filePath.forEach((file) => {
-		fsp.readFile(file, 'utf8').then((data) => {
-			marked(data, { renderer });
-		}).catch((error) => {
-			console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
-			return;
-		})
+		fsp.readFile(file, 'utf8')
+			.then((data) => {
+				marked(data, { renderer });
+			})
+			.catch((error) => {
+				console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
+				return;
+			})
 	})
 };
 
 
 function checkLink(url) {
-	// return 'dentro'
 	return new Promise((resolve, reject) => {
 		fetch(url.cleanLinks, { method: 'HEAD' })
 			.then(response => {
 				if (response.status === 200) {
-					url.boolean = true; // El link funciona
-					url.statustext === response.status
+					url.boolean = true;
+					url.statustext === response.statustext
+					console.log('status', url.statustext);
 				} else {
-					url.boolean =  false; // El link no funciona
+					url.boolean = false;
 					url.statustext === response.statusTextclear
-				
 				}
 				resolve(url)
 			})
 			.catch(error => {
-				console.error(`Error al comprobar el link ${url}: ${error}`);
-				return false;
+				reject(console.error(`Error al comprobar el link ${url}: ${error}`));
 			});
 	});
 }
 
 
 
-function mdLinks(filePath, options) {
-	const absolutePath = testRelativeAbsolute(filePath)
-	getFiles(absolutePath)
-/* 	return new Promise((return, reject) => {
-		
-			.then(links => {
-				resolve(console.log(links));
+function mdLinks(filePath) {
+	console.log('Entro a mdlinks');
+	return new Promise((resolve, reject) => {
+		getLinks(filePath)
+		/* const arrFiles = []
+		getFiles(filePath, arrFiles).then(() => {
+			//resolve(arrFiles)
+			return getLinks(arrFiles)
+		})
+			.then(pruebaObj => {
+				resolve(pruebaObj);
+				//return checkLink(pruebaObj)
+			}) */
+			/* .then((arrLinks) => {
+				resolve(arrLinks)
+			}) */
+	})
+
+	//return getFiles(testRelativeAbsolute(filePath))
+	/* getFiles(testRelativeAbsolute(filePath))
+		.then(route => {
+			console.log(route);
+			return getMDExt(route)
+		})
+		.then(arrFiles => {
+			console.log(arrFiles);
+			return getLinks(arrFiles)
+		})
+		.then(pruebaObj => {
+			console.log(pruebaObj);
+			return checkLink(pruebaObj)
+		})
+		.then(status => {
+			console.log(status);
+			filePath.forEach((file) => {
+				fsp.readFile(file, 'utf8')
+					.then((data) => {
+						return marked(data, { status });
+					})
+					.catch((error) => {
+						console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
+						return
+					})
 			})
-	}) */
+			//resolve('hola') */
+
+	//})
 
 	//console.log(getFiles(absolutePath));
 }
 
 
 
-export { testRelativeAbsolute, getFiles, getMDExt, getLinks, checkLink, mdLinks }
+export { mdLinks, getLinks }
