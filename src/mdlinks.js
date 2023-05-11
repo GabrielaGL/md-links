@@ -32,7 +32,6 @@ function testRelativeAbsolute(filePath) {
 	while (!path.isAbsolute(resolvedPath)) {
 		resolvedPath = path.resolve(resolvedPath);
 	}
-	//console.log('Este es resolved path', resolvedPath);
 	return resolvedPath;
 }
 
@@ -43,13 +42,11 @@ function testPath(filePath) {
 			if (error) {
 				reject(console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`)));
 			} else {
-				//console.log(stats);
 				resolve(stats)
 			}
 		})
 	})
-
-}
+};
 
 
 function getFiles(filePath, arrFiles) {
@@ -98,10 +95,10 @@ function getLinks(filePath) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
 		return;
 	}
-
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
 		const pruebaOjs = { cleanLinks, text, filePath }
+		console.log("pruebaOjs: ", pruebaOjs);
 		return pruebaOjs
 
 		/* checkLink(pruebaOjs).then(resp => {
@@ -147,8 +144,7 @@ function checkLink(url) {
 function mdLinks(filePath) {
 	console.log('Entro a mdlinks');
 	return new Promise((resolve, reject) => {
-		getLinks(filePath)
-		/* const arrFiles = []
+		const arrFiles = []
 		getFiles(filePath, arrFiles).then(() => {
 			//resolve(arrFiles)
 			return getLinks(arrFiles)
@@ -156,45 +152,14 @@ function mdLinks(filePath) {
 			.then(pruebaObj => {
 				resolve(pruebaObj);
 				//return checkLink(pruebaObj)
-			}) */
-			/* .then((arrLinks) => {
+			}) 
+			/*  .then((arrLinks) => {
 				resolve(arrLinks)
 			}) */
 	})
 
-	//return getFiles(testRelativeAbsolute(filePath))
-	/* getFiles(testRelativeAbsolute(filePath))
-		.then(route => {
-			console.log(route);
-			return getMDExt(route)
-		})
-		.then(arrFiles => {
-			console.log(arrFiles);
-			return getLinks(arrFiles)
-		})
-		.then(pruebaObj => {
-			console.log(pruebaObj);
-			return checkLink(pruebaObj)
-		})
-		.then(status => {
-			console.log(status);
-			filePath.forEach((file) => {
-				fsp.readFile(file, 'utf8')
-					.then((data) => {
-						return marked(data, { status });
-					})
-					.catch((error) => {
-						console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
-						return
-					})
-			})
-			//resolve('hola') */
-
-	//})
-
-	//console.log(getFiles(absolutePath));
 }
 
 
 
-export { mdLinks, getLinks }
+export {	testRelativeAbsolute, testPath, mdLinks, getLinks }
