@@ -45,10 +45,8 @@ function getFiles(filePath, arrFiles) {
 		testPath(testRelativeAbsolute(filePath))
 			.then((stats) => {
 				if (stats.isFile()) {
-					//resolve(filePath)
 					if (path.extname(filePath) === '.md') {
 						arrFiles.push(filePath);
-						//
 					}
 					resolve(arrFiles)
 				} else if (stats.isDirectory()) {
@@ -79,13 +77,8 @@ function getLinks(filePath) {
 		renderer.link = function (href, title, text) {
 			const cleanLinks = DOMPurify.sanitize(href);
 			const links = { cleanLinks, text, filePath }
-			//console.log("pruebaOjs: ", pruebaOjs);
-			/* checkLink(links).then(resp => {
-				links.push(resp)
-			}) */
 			resolve(links)
 			//console.log(links);
-
 		}
 		filePath.forEach((file) => {
 			fsp.readFile(file, 'utf8')
@@ -100,32 +93,6 @@ function getLinks(filePath) {
 	})
 
 }
-
-
-/* function getLinks(filePath) {
-	if (filePath.length < 1) {
-		console.error(chalk.bold.red('No se encontraron archivos .md'));
-		return;
-	}
-	//console.log(renderer.link('string'));
-	const renderer = new marked.Renderer();
-	renderer.link = function (href, title, text) {
-		const cleanLinks = DOMPurify.sanitize(href);
-		const pruebaOjs = { cleanLinks, text, filePath }
-		//console.log("pruebaOjs: ", pruebaOjs);
-	
-	}
-	filePath.forEach((file) => {
-		fsp.readFile(file, 'utf8')
-			.then((data) => {
-				marked(data, { renderer });
-			})
-			.catch((error) => {
-				console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`));
-				return;
-			})
-	})
-}; */
 
 
 function checkLink(url) {
@@ -168,7 +135,6 @@ function mdLinks(filePath) {
 			})
 			.catch(error => reject(console.error(chalk.bold.red(error))))
 	})
-
 }
 
 
