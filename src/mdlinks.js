@@ -7,9 +7,10 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 
-const renderer = new marked.Renderer();
+
 
 const error = chalk.bold.red;
+const error1 = chalk.bold.bgRed
 const hrefChalk = chalk.bgHex('#E14C67').bold;
 const textChalk = chalk.bgHex('#FAB702').bold;
 const fileChalk = chalk.bgHex('#937DC2').bold;
@@ -78,33 +79,51 @@ function getFiles(filePath, arrFiles) {
 };
 
 
-
-/* function getMDExt(filePath) {
-	const arrFiles = [];
-	if (path.extname(filePath) === '.md') {
-		arrFiles.push(filePath);
-		//getLinks(arrFiles)
-		//console.log(arrFiles);
-		return arrFiles;
-	}
-}; */
-
-
 function getLinks(filePath) {
+	return new Promise((resolve, reject) => {
+		if (filePath.length < 1) {
+			console.error(chalk.bold.red('No se encontraron archivos .md'));
+			return;
+		}
+		const links = [];
+		const renderer = new marked.Renderer();
+		renderer.link = (href, title, text) => {
+			const cleanLinks = DOMPurify.sanitize(href);
+			links.push({ cleanLinks, text, filePath })
+			/* checkLink(links).then(resp => {
+				links.push(resp)
+			}) */
+			resolve(links)
+			//console.log(links);
+
+		}
+		filePath.forEach((file) => {
+			fsp.readFile(file, 'utf8')
+				.then((data) => {
+					marked(data, { renderer });
+				})
+				.catch((error) => {
+					reject(console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`)));
+
+				})
+		})
+	})
+
+}
+
+
+/* function getLinks(filePath) {
 	if (filePath.length < 1) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
 		return;
 	}
+	//console.log(renderer.link('string'));
+	const renderer = new marked.Renderer();
 	renderer.link = function (href, title, text) {
 		const cleanLinks = DOMPurify.sanitize(href);
 		const pruebaOjs = { cleanLinks, text, filePath }
-		console.log("pruebaOjs: ", pruebaOjs);
-		return pruebaOjs
-
-		/* checkLink(pruebaOjs).then(resp => {
-			return resp
-		}) */
-		//return {cleanLinks, text, filePath}
+		//console.log("pruebaOjs: ", pruebaOjs);
+	
 	}
 	filePath.forEach((file) => {
 		fsp.readFile(file, 'utf8')
@@ -116,7 +135,7 @@ function getLinks(filePath) {
 				return;
 			})
 	})
-};
+}; */
 
 
 function checkLink(url) {
@@ -131,8 +150,9 @@ function checkLink(url) {
 					url.boolean = false;
 					url.statustext === response.statusTextclear
 				}
-				resolve(url)
+				//resolve(url)
 			})
+			resolve(url)
 			.catch(error => {
 				reject(console.error(`Error al comprobar el link ${url}: ${error}`));
 			});
@@ -150,16 +170,17 @@ function mdLinks(filePath) {
 			return getLinks(arrFiles)
 		})
 			.then(pruebaObj => {
-				resolve(pruebaObj);
-				//return checkLink(pruebaObj)
-			}) 
-			/*  .then((arrLinks) => {
+				//resolve(pruebaObj);
+				return checkLink(pruebaObj)
+			})
+			.then((arrLinks) => {
 				resolve(arrLinks)
-			}) */
+			})
+			.catch(error => reject(console.error(chalk.bold.red(error))))
 	})
 
 }
 
 
 
-export {	testRelativeAbsolute, testPath, mdLinks, getLinks }
+export { testRelativeAbsolute, testPath, mdLinks, getLinks }
