@@ -11,17 +11,7 @@ import fetch from 'node-fetch';
 
 const error = chalk.bold.red;
 const error1 = chalk.bold.bgRed
-const hrefChalk = chalk.bgHex('#E14C67').bold;
-const textChalk = chalk.bgHex('#FAB702').bold;
-const fileChalk = chalk.bgHex('#937DC2').bold;
-const status = chalk.bgHex('#E8A0BF').bold;
-const hrefText = chalk.hex('#E14C67').bold;
-const textText = chalk.hex('#FAB702').bold;
-const fileText = chalk.hex('#937DC2').bold;
-const statusText = chalk.hex('#E8A0BF').bold;
-const ok = chalk.bgHex('#4CAB00').bold;
-const fail = chalk.bgHex('#C60000').bold;
-const blankSpace = chalk.hidden;
+
 
 
 function testRelativeAbsolute(filePath) {
@@ -52,7 +42,7 @@ function testPath(filePath) {
 
 function getFiles(filePath, arrFiles) {
 	return new Promise((resolve, reject) => {
-		testPath(filePath)
+		testPath(testRelativeAbsolute(filePath))
 			.then((stats) => {
 				if (stats.isFile()) {
 					//resolve(filePath)
@@ -60,7 +50,7 @@ function getFiles(filePath, arrFiles) {
 						arrFiles.push(filePath);
 						//
 					}
-					resolve()
+					resolve(arrFiles)
 				} else if (stats.isDirectory()) {
 					const readDirec = fs.readdirSync(filePath)
 					const getFilesPromises = [];
@@ -69,7 +59,7 @@ function getFiles(filePath, arrFiles) {
 						getFilesPromises.push(getFiles(innerRoutePath, arrFiles));
 					})
 					Promise.all(getFilesPromises).then(() => {
-						resolve()
+						resolve(arrFiles)
 					})
 
 				}
@@ -85,11 +75,11 @@ function getLinks(filePath) {
 			console.error(chalk.bold.red('No se encontraron archivos .md'));
 			return;
 		}
-		const links = [];
 		const renderer = new marked.Renderer();
-		renderer.link = (href, title, text) => {
+		renderer.link = function (href, title, text) {
 			const cleanLinks = DOMPurify.sanitize(href);
-			links.push({ cleanLinks, text, filePath })
+			const links = { cleanLinks, text, filePath }
+			//console.log("pruebaOjs: ", pruebaOjs);
 			/* checkLink(links).then(resp => {
 				links.push(resp)
 			}) */
@@ -150,9 +140,8 @@ function checkLink(url) {
 					url.boolean = false;
 					url.statustext === response.statusTextclear
 				}
-				//resolve(url)
+				resolve(url)
 			})
-			resolve(url)
 			.catch(error => {
 				reject(console.error(`Error al comprobar el link ${url}: ${error}`));
 			});
@@ -165,10 +154,11 @@ function mdLinks(filePath) {
 	console.log('Entro a mdlinks');
 	return new Promise((resolve, reject) => {
 		const arrFiles = []
-		getFiles(filePath, arrFiles).then(() => {
-			//resolve(arrFiles)
-			return getLinks(arrFiles)
-		})
+		getFiles(testRelativeAbsolute(filePath), arrFiles)
+			.then(() => {
+				//resolve(arrFiles)
+				return getLinks(arrFiles)
+			})
 			.then(pruebaObj => {
 				//resolve(pruebaObj);
 				return checkLink(pruebaObj)
