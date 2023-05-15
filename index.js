@@ -22,12 +22,11 @@ const blankSpace = chalk.hidden;
 testPath(filePath) */
 
 function cli(filePath) {
-	console.log('Entra a cli');
 	mdLinks(filePath)
 		.then(resp => {
-			console.log(resp)
+			//console.log('Esta es la promesa de index', resp)
 		/* 	if (process.argv.includes('--validate')) {
-				/* console.group()
+				console.group()
 				console.log(hrefChalk(' href '), hrefText(resp.cleanLinks));
 				console.log(textChalk(' text '), textText(resp.text));
 				console.log(fileChalk(' file '), fileText(resp.filePath));

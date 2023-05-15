@@ -40,26 +40,25 @@ function testPath(filePath) {
 };
 
 
-function getFiles(filePath, arrFiles) {
+function getFiles(filePath) {
 	return new Promise((resolve, reject) => {
 		testPath(testRelativeAbsolute(filePath))
 			.then((stats) => {
 				if (stats.isFile()) {
 					if (path.extname(filePath) === '.md') {
-						arrFiles.push(filePath);
+						//arrFiles.push(filePath);
+						resolve(filePath)
 					}
-					resolve(arrFiles)
 				} else if (stats.isDirectory()) {
 					const readDirec = fs.readdirSync(filePath)
 					const getFilesPromises = [];
 					readDirec.forEach((file) => {
 						const innerRoutePath = `${filePath}/${file}`;
-						getFilesPromises.push(getFiles(innerRoutePath, arrFiles));
+						getFiles(innerRoutePath);
 					})
 					Promise.all(getFilesPromises).then(() => {
-						resolve(arrFiles)
+						resolve(filePath)
 					})
-
 				}
 			})
 	})
@@ -73,64 +72,89 @@ function getLinks(filePath) {
 			console.error(chalk.bold.red('No se encontraron archivos .md'));
 			return;
 		}
+		const links = [];
 		const renderer = new marked.Renderer();
 		renderer.link = function (href, title, text) {
-			const cleanLinks = DOMPurify.sanitize(href);
-			const links = { cleanLinks, text, filePath }
-			resolve(links)
+			const regex = /\bhttps?:\/\/\S+\b(?!#)\b/gi;
+			const links = href.match(regex);
+			const cleanLink = DOMPurify.sanitize(links);
+			const link = { cleanLink, text, filePath }
+			links.push(link)
+			/* 			checkLink(link)
+							.then(resp => console.log(resp))
+							.catch(err => reject(err)) */
+
 			//console.log(links);
 		}
-		filePath.forEach((file) => {
-			fsp.readFile(file, 'utf8')
-				.then((data) => {
-					marked(data, { renderer });
-				})
-				.catch((error) => {
-					reject(console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`)));
 
-				})
-		})
+		fsp.readFile(filePath, 'utf8')
+			.then((data) => {
+				marked(data, { renderer });
+				resolve(links);
+			})
+			.catch((error) => {
+				reject(console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`)));
+
+			})
 	})
 
 }
 
-
 function checkLink(url) {
-	return new Promise((resolve, reject) => {
-		fetch(url.cleanLinks, { method: 'HEAD' })
+	const fetchPromises = url.map(link => {
+		return fetch(link.cleanLink, { method: 'HEAD' })
 			.then(response => {
-				if (response.status === 200) {
-					url.boolean = true;
-					url.statustext === response.statustext
-					console.log('status', url.statustext);
-				} else {
-					url.boolean = false;
-					url.statustext === response.statusTextclear
-				}
-				resolve(url)
+				link['status'] = response.status;
+				link['statusText'] = response.statusText;
+				return link;
 			})
 			.catch(error => {
-				reject(console.error(`Error al comprobar el link ${url}: ${error}`));
+				console.error(`Error al comprobar el link ${link}: ${error}`);
+				return
 			});
 	});
+
+	return Promise.all(fetchPromises)
+		.then(fullLinks => {
+			//console.log('Esto es url', fullLinks);
+			return fullLinks; // Retornamos el array completo de links
+		});
 }
+
+
+/* function checkLink(url) {
+	return new Promise((resolve, reject) => {
+		url.forEach(link => {
+			fetch(link.cleanLink, { method: 'HEAD' })
+				.then(response => {
+					link['status'] = response.status
+					link['statustext'] = response.statusText
+				})
+				.catch(error => {
+					reject(console.error(`Error al comprobar el link ${link}: ${error}`));
+				});
+		})
+		resolve(url)
+	});
+} */
 
 
 
 function mdLinks(filePath) {
-	console.log('Entro a mdlinks');
 	return new Promise((resolve, reject) => {
-		const arrFiles = []
-		getFiles(testRelativeAbsolute(filePath), arrFiles)
-			.then(() => {
+		getFiles(testRelativeAbsolute(filePath))
+			.then((arrFiles) => {
 				//resolve(arrFiles)
+				//console.log('Este es arrfiles', arrFiles);
 				return getLinks(arrFiles)
 			})
-			.then(pruebaObj => {
-				//resolve(pruebaObj);
-				return checkLink(pruebaObj)
+			.then(links => {
+				//console.log('Estos son los links', links);
+				//resolve(links);
+				return checkLink(links)
 			})
 			.then((arrLinks) => {
+				//console.log('Esta es la promesa de mdlinks', arrLinks);
 				resolve(arrLinks)
 			})
 			.catch(error => reject(console.error(chalk.bold.red(error))))
