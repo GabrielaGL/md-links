@@ -28,7 +28,8 @@
     "chalk": "^4.1.2",
     "isomorphic-dompurify": "^1.4.0",
     "marked": "^4.3.0",
-    "node-fetch": "^2.6.10"
+    "node-fetch": "^2.6.10",
+    "util": "^0.12.5"
   },
   "directories": {
     "test": "test"
