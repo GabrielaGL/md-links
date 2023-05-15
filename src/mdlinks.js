@@ -76,17 +76,12 @@ function getLinks(filePath) {
 		const renderer = new marked.Renderer();
 		renderer.link = function (href, title, text) {
 			const regex = /\bhttps?:\/\/\S+\b(?!#)\b/gi;
-			const links = href.match(regex);
-			const cleanLink = DOMPurify.sanitize(links);
-			const link = { cleanLink, text, filePath }
-			links.push(link)
-			/* 			checkLink(link)
-							.then(resp => console.log(resp))
-							.catch(err => reject(err)) */
-
-			//console.log(links);
+			if (href.match(regex)) {
+				const cleanLink = DOMPurify.sanitize(href);
+				const link = { cleanLink, text, filePath }
+				links.push(link)
+			}
 		}
-
 		fsp.readFile(filePath, 'utf8')
 			.then((data) => {
 				marked(data, { renderer });

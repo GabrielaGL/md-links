@@ -23,8 +23,8 @@ testPath(filePath) */
 
 function cli(filePath) {
 	mdLinks(filePath)
-		.then(resp => {
-			//console.log('Esta es la promesa de index', resp)
+		.then(fullLinks => {
+			console.log('Esta es la promesa de index', fullLinks)
 		/* 	if (process.argv.includes('--validate')) {
 				console.group()
 				console.log(hrefChalk(' href '), hrefText(resp.cleanLinks));
