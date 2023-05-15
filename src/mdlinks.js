@@ -149,8 +149,10 @@ function mdLinks(filePath) {
 				return checkLink(links)
 			})
 			.then((arrLinks) => {
+				const result = arrLinks.filter(obj => obj !== undefined).map(obj => obj);
+				
 				//console.log('Esta es la promesa de mdlinks', arrLinks);
-				resolve(arrLinks)
+				resolve(result)
 			})
 			.catch(error => reject(console.error(chalk.bold.red(error))))
 	})

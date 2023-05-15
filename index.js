@@ -23,22 +23,31 @@ testPath(filePath) */
 
 function cli(filePath) {
 	mdLinks(filePath)
-		.then(fullLinks => {
-			console.log('Esta es la promesa de index', fullLinks)
-		/* 	if (process.argv.includes('--validate')) {
-				console.group()
-				console.log(hrefChalk(' href '), hrefText(resp.cleanLinks));
-				console.log(textChalk(' text '), textText(resp.text));
-				console.log(fileChalk(' file '), fileText(resp.filePath));
-				console.log(blankSpace("espacio"));
-				console.groupEnd() 
-			}
-			else if (process.argv.includes('--stats')) {
-				console.group()
-
-				console.groupEnd()
-			} */
-
+		.then(completeLinks => {
+			completeLinks.forEach(element => {
+				//console.log('Esta es la promesa de index', element)
+				if(!options) {
+						console.group()
+						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
+						console.log(textChalk(' text '), textText(element.text));
+						console.log(fileChalk(' file '), fileText(element.filePath));
+						console.log(blankSpace("espacio"));
+						console.groupEnd()
+					}
+					else if (process.argv.includes('--validate')) {
+						console.group()
+				/* 		console.log(hrefChalk(' href '), hrefText(resp.cleanLinks));
+						console.log(textChalk(' text '), textText(resp.text));
+						console.log(fileChalk(' file '), fileText(resp.filePath));
+						console.log(blankSpace("espacio")); */
+						console.groupEnd() 
+					}
+					else if (process.argv.includes('--stats')) {
+						console.group()
+		
+						console.groupEnd()
+					}
+			});
 		})
 		.catch(error => console.log(error))
 }
