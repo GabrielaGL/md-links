@@ -7,11 +7,9 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 
-
-
+console.warn = () => { };
 const error = chalk.bold.red;
 const error1 = chalk.bold.bgRed
-
 
 
 function testRelativeAbsolute(filePath) {
@@ -46,54 +44,77 @@ function getFiles(filePath) {
 			.then((stats) => {
 				if (stats.isFile()) {
 					if (path.extname(filePath) === '.md') {
-						//arrFiles.push(filePath);
-						resolve(filePath)
+						console.log('Este es filep', filePath);
+						resolve([filePath]);
+					} else {
+						resolve([]);
 					}
 				} else if (stats.isDirectory()) {
-					const readDirec = fs.readdirSync(filePath)
-					const getFilesPromises = [];
-					readDirec.forEach((file) => {
-						const innerRoutePath = `${filePath}/${file}`;
-						getFiles(innerRoutePath);
-					})
-					Promise.all(getFilesPromises).then(() => {
-						resolve(filePath)
-					})
+					fs.readdir(filePath, (err, files) => {
+						if (err) {
+							console.error(err);
+							reject(err);
+							return;
+						}
+						const promises = files.map((file) => {
+							const innerRoutePath = path.join(filePath, file);
+							return getFiles(innerRoutePath);
+						});
+						Promise.all(promises)
+							.then((files) => {
+								const flattenedFiles = files.flat();
+								resolve(flattenedFiles);
+							})
+							.catch((err) => {
+								console.error(err);
+								reject(err);
+							});
+					});
+				} else {
+					resolve([]);
 				}
 			})
-	})
+			.catch((err) => {
+				console.error(err);
+				reject(err);
+			});
+	});
+}
 
-};
 
-
-function getLinks(filePath) {
-	return new Promise((resolve, reject) => {
-		if (filePath.length < 1) {
-			console.error(chalk.bold.red('No se encontraron archivos .md'));
-			return;
-		}
+function getLinks(filePaths) {
+	if (filePaths.length < 1) {
+		console.error(chalk.bold.red('No se encontraron archivos .md'));
+		return [];
+	}
+	const promises = filePaths.map((file) => {
 		const links = [];
 		const renderer = new marked.Renderer();
 		renderer.link = function (href, title, text) {
 			const regex = /\bhttps?:\/\/\S+\b(?!#)\b/gi;
 			if (href.match(regex)) {
 				const cleanLink = DOMPurify.sanitize(href);
-				const link = { cleanLink, text, filePath }
-				links.push(link)
+				const link = { cleanLink, text, filePath: file };
+				links.push(link);
 			}
-		}
-		fsp.readFile(filePath, 'utf8')
+		};
+		return fsp.readFile(file, 'utf8')
 			.then((data) => {
 				marked(data, { renderer });
-				resolve(links);
+				return links;
 			})
 			.catch((error) => {
-				reject(console.error(chalk.bold.red(`No se pudieron leer los archivos. Error: ${error.code}`)));
-
-			})
-	})
-
+				console.error(chalk.bold.red(`No se pudo leer el archivo '${file}'. Error: ${error.code}`));
+				return [];
+			});
+	});
+	return Promise.all(promises)
+		.then((results) => {
+			const allLinks = results.flat();
+			return allLinks;
+		});
 }
+
 
 function checkLink(url) {
 	const fetchPromises = url.map(link => {
@@ -108,53 +129,27 @@ function checkLink(url) {
 				return
 			});
 	});
-
 	return Promise.all(fetchPromises)
 		.then(fullLinks => {
-			//console.log('Esto es url', fullLinks);
-			return fullLinks; // Retornamos el array completo de links
+			return fullLinks;
 		});
 }
-
-
-/* function checkLink(url) {
-	return new Promise((resolve, reject) => {
-		url.forEach(link => {
-			fetch(link.cleanLink, { method: 'HEAD' })
-				.then(response => {
-					link['status'] = response.status
-					link['statustext'] = response.statusText
-				})
-				.catch(error => {
-					reject(console.error(`Error al comprobar el link ${link}: ${error}`));
-				});
-		})
-		resolve(url)
-	});
-} */
-
 
 
 function mdLinks(filePath) {
 	return new Promise((resolve, reject) => {
 		getFiles(testRelativeAbsolute(filePath))
 			.then((arrFiles) => {
-				//resolve(arrFiles)
-				//console.log('Este es arrfiles', arrFiles);
 				return getLinks(arrFiles)
 			})
 			.then(links => {
-				//console.log('Estos son los links', links);
-				//resolve(links);
 				return checkLink(links)
 			})
 			.then((arrLinks) => {
 				const result = arrLinks.filter(obj => obj !== undefined).map(obj => obj);
-				
-				//console.log('Esta es la promesa de mdlinks', arrLinks);
 				resolve(result)
 			})
-			.catch(error => reject(console.error(chalk.bold.red(error))))
+			.catch(error => reject(console.error(chalk.bold.red('Este es el error de mdlinks', error))))
 	})
 }
 

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { mdLinks, getLinks } from "./src/mdlinks.js";
+import { mdLinks } from "./src/mdlinks.js";
 
 const filePath = process.argv[2];
 const options = process.argv[3];
@@ -15,17 +15,12 @@ const statusText = chalk.hex('#E8A0BF').bold;
 const ok = chalk.bgHex('#4CAB00').bold;
 const fail = chalk.bgHex('#C60000').bold;
 const blankSpace = chalk.hidden;
-//console.log(process.argv);
 
-
-/* testRelativeAbsolute(filePath)
-testPath(filePath) */
 
 function cli(filePath) {
 	mdLinks(filePath)
 		.then(completeLinks => {
 			completeLinks.forEach(element => {
-				//console.log('Esta es la promesa de index', element)
 				if(!options) {
 						console.group()
 						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
@@ -53,11 +48,3 @@ function cli(filePath) {
 }
 
 cli(filePath, options);
-
-
-/* console.group();
-		console.log(hrefChalk(' href '), hrefText(cleanLinks.slice(0, 50)));
-		console.log(textChalk(' text '), textText(text));
-		console.log(fileChalk(' file '), fileText(filePath.slice(0, 50)));
-		console.log(blankSpace("espacio"));
-		console.groupEnd(); */
