@@ -109,8 +109,8 @@ function getLinks(filePaths) {
 		renderer.link = function (href, title, text) {
 			const regex = /\bhttps?:\/\/\S+\b(?!#)\b/gi;
 			if (href.match(regex)) {
-				const cleanLink = DOMPurify.sanitize(href);
-				const link = { cleanLink, text, filePath: file };
+				const cleanLink = DOMPurify.sanitize(href).slice(0, 50);
+				const link = { cleanLink, text, filePath: file.slice(0, 50) };
 				links.push(link);
 			}
 		};
@@ -145,8 +145,8 @@ function checkLink(url) {
 				return link;
 			})
 			.catch(error => {
-				console.error(`Error al comprobar el link ${link}: ${error}`);
-				return
+				//console.error(`Error al comprobar el link ${link}: ${error}`);
+				return error
 			});
 	});
 	return Promise.all(fetchPromises)
