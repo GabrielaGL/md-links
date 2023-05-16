@@ -56,7 +56,6 @@ function getFiles(filePath) {
 			.then((stats) => {
 				if (stats.isFile()) {
 					if (path.extname(filePath) === '.md') {
-						console.log('Este es filep', filePath);
 						resolve([filePath]);
 					} else {
 						resolve([]);

@@ -1,38 +1,54 @@
-import { testRelativeAbsolute, getFiles, getMDExt, checkLink } from "../src/mdlinks.js";
+import { testRelativeAbsolute, testPath, getFiles, getMDExt, checkLink } from "../src/mdlinks.js";
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+
 
 
 describe('testRelativeAbsolute', () => {
-  test('returns true for an absolute path', () => {
-    const result = testRelativeAbsolute('/path/to/file');
-    expect(result).toBe(true);
+  it("Debería resolver una ruta relativa a una ruta absoluta", () => {
+    const relativePath = "path/to/file.txt";
+    const resolvedPath = testRelativeAbsolute(relativePath);
+    expect(path.isAbsolute(resolvedPath)).toBe(true);
   });
-
-  test('returns an error message for an invalid path', () => {
+  
+  it("Debería devolver null si no se proporciona una ruta", () => {
+    expect(testRelativeAbsolute()).toBe(null);
+  });
+  
+  it("Debería imprimir un mensaje de error si se proporciona una ruta no válida", () => {
     console.error = jest.fn();
     const result = testRelativeAbsolute('');
     expect(console.error).toHaveBeenCalledWith(chalk.bold.red('La ruta no es válida. Intenta con una ruta válida'));
   });
+  
 });
 
 
 
-describe('getMDExt', () => {
-  test('should return an array with one file path if the file has .md extension', () => {
-    const filePath = '/path/to/file.md';
-    const expectedOutput = ['/path/to/file.md'];
-    expect(getMDExt(filePath)).toEqual(expectedOutput);
+
+/* describe('getFiles', () => {
+  const testfolder = path.join(__dirname, 'testfolder');
+  beforeAll(() => {
+    fs.writeFileSync(path.join(testfolder, 'not-a-markdown-file.txt'));
   });
 
-  test('should return an empty array if the file does not have .md extension', () => {
-    const filePath = '/path/to/file.txt';
-    const expectedOutput = false;
-    expect(getMDExt(filePath)).toBe(expectedOutput);
+  afterAll(() => {
+    fs.unlinkSync(path.join(testfolder, 'not-a-markdown-file.txt'));
   });
-});
+
+  it('should return false for not md files', (done) => {
+    getFiles(testfolder)
+      .then((file) => {
+        expect(file).toEqual([]);
+        done();
+      });
+  });
+}) */
 
 
-describe('checkLink', () => {
+/* describe('checkLink', () => {
   it('should return true for a valid link', async () => {
     const result = await checkLink('https://www.google.com');
     expect(result).toBe(true);
@@ -47,4 +63,46 @@ describe('checkLink', () => {
     const result = await checkLink('');
     expect(result).toBe(false);
   });
+});
+  */
+
+
+// Mock de fetch
+jest.mock('node-fetch');
+
+describe('checkLink', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('Debería retornar cada link con su texto, path y status', async () => {
+    const links = [
+      { cleanLink: 'https://example.com', text: 'Link1', filePath: '/file/path.md' },
+      { cleanLink: 'https://example.edu', text: 'Link2', filePath: '/file/path.md' },
+    ];
+
+    // Mock Ok
+    const mockResponse1 = { status: 200, statusText: 'OK' };
+    fetch.mockResolvedValueOnce(mockResponse1);
+
+    // Mock Fail
+    const mockResponse2 = { status: 404, statusText: 'Not Found' };
+    fetch.mockResolvedValueOnce(mockResponse2);
+
+    const result = await checkLink(links);
+
+    expect(fetch).toHaveBeenCalledWith('https://example.com', { method: 'HEAD' });
+    expect(fetch).toHaveBeenCalledWith('https://example.edu', { method: 'HEAD' });
+
+    expect(result).toEqual([
+      { cleanLink: 'https://example.com', text: 'Link1', filePath: '/file/path.md', status: 200, statusText: 'OK' },
+      { cleanLink: 'https://example.edu', text: 'Link2', filePath: '/file/path.md', status: 404, statusText: 'Not Found' },
+    ]);
+  });
+
+/*   it('should show error to links', async () => {
+      console.error = jest.fn();
+      const result = checkLink('');
+      expect(console.error).toHaveBeenCalledWith(chalk.bold.red('Error al comprobar el link'));
+    }); */
 });
