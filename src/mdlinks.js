@@ -11,7 +11,11 @@ console.warn = () => { };
 const error = chalk.bold.red;
 const error1 = chalk.bold.bgRed
 
-
+/**
+ * Convert relative paths to absolute
+ * @param {*} filePath 
+ * @returns 
+ */
 function testRelativeAbsolute(filePath) {
 	if (!filePath) {
 		console.error(chalk.bold.red("La ruta no es válida. Intenta con una ruta válida"));
@@ -24,7 +28,11 @@ function testRelativeAbsolute(filePath) {
 	return resolvedPath;
 }
 
-
+/**
+ * Provides route statistics
+ * @param {*} filePath 
+ * @returns 
+ */
 function testPath(filePath) {
 	return new Promise((resolve, reject) => {
 		fs.stat(filePath, (error, stats) => {
@@ -37,7 +45,11 @@ function testPath(filePath) {
 	})
 };
 
-
+/**
+ * Open directories and return each file
+ * @param {*} filePath 
+ * @returns 
+ */
 function getFiles(filePath) {
 	return new Promise((resolve, reject) => {
 		testPath(testRelativeAbsolute(filePath))
@@ -81,11 +93,15 @@ function getFiles(filePath) {
 	});
 }
 
-
+/**
+ * Filter links of each file
+ * @param {*} filePaths 
+ * @returns 
+ */
 function getLinks(filePaths) {
 	if (filePaths.length < 1) {
 		console.error(chalk.bold.red('No se encontraron archivos .md'));
-		return [];
+		return;
 	}
 	const promises = filePaths.map((file) => {
 		const links = [];
@@ -115,7 +131,11 @@ function getLinks(filePaths) {
 		});
 }
 
-
+/**
+ * Makes http request to verify links
+ * @param {*} url 
+ * @returns 
+ */
 function checkLink(url) {
 	const fetchPromises = url.map(link => {
 		return fetch(link.cleanLink, { method: 'HEAD' })
@@ -135,7 +155,11 @@ function checkLink(url) {
 		});
 }
 
-
+/**
+ * Promise chain of each function
+ * @param {*} filePath 
+ * @returns 
+ */
 function mdLinks(filePath) {
 	return new Promise((resolve, reject) => {
 		getFiles(testRelativeAbsolute(filePath))
