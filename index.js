@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import figlet from 'figlet';
 import { mdLinks } from "./src/mdlinks.js";
 
 const filePath = process.argv[2];
@@ -25,6 +26,15 @@ const blankSpace = chalk.hidden;
 
 
 function cli(filePath) {
+	figlet.text('                 MDlinks', {
+    font: "Big",
+    horizontalLayout: "default",
+    verticalLayout: "default",
+    width: 80,
+    whitespaceBreak: true,
+  }, function (err, data){
+		console.log(data)
+	 })
 	mdLinks(filePath)
 		.then(completeLinks => {
 			let total = 0;
@@ -38,18 +48,18 @@ function cli(filePath) {
 				//console.log(element);
 				if (!options) {
 					console.group()
-					console.log(hrefChalk(' href '), hrefText(element.cleanLink.slice(0, 50)));
+					console.log(hrefChalk(' href '), hrefText(element.cleanLink));
 					console.log(textChalk(' text '), textText(element.text));
-					console.log(fileChalk(' file '), fileText(element.filePath.slice(0, 50)));
+					console.log(fileChalk(' file '), fileText(element.filePath));
 					console.log(blankSpace("blank"));
 					console.groupEnd()
 				}
 				else if (process.argv.includes('--validate')) {
 					if (element.status === 200) {
 						console.group()
-						console.log(hrefChalk(' href '), hrefText(element.cleanLink.slice(0, 50)));
+						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
 						console.log(textChalk(' text '), textText(element.text));
-						console.log(fileChalk(' file '), fileText(element.filePath.slice(0, 50)));
+						console.log(fileChalk(' file '), fileText(element.filePath));
 						console.log(statusChalk(' stat '), statusText(element.status));
 						console.log(ok('  ok  '));
 						console.log(blankSpace("blank"));
@@ -57,9 +67,9 @@ function cli(filePath) {
 					}
 					else {
 						console.group()
-						console.log(hrefChalk(' href '), hrefText(element.cleanLink.slice(0, 50)));
+						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
 						console.log(textChalk(' text '), textText(element.text));
-						console.log(fileChalk(' file '), fileText(element.filePath.slice(0, 50)));
+						console.log(fileChalk(' file '), fileText(element.filePath));
 						console.log(statusChalk(' stat '), statusText(element.status));
 						console.log(fail(' fail '));
 						console.log(blankSpace("blank"));
