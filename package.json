@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "figlet": "^1.6.0",
     "isomorphic-dompurify": "^1.4.0",
     "marked": "^4.3.0",
     "node-fetch": "^2.6.10",
