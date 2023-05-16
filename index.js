@@ -14,12 +14,13 @@ const fileText = chalk.hex('#937DC2').bold;
 const statusText = chalk.hex('#FD874F').bold;
 const ok = chalk.bgHex('#4CAB00').bold;
 const fail = chalk.bgHex('#C60000').bold;
-const totalChalk = chalk.bgHex('#40B7E1').bold;
-const uniqueChalk = chalk.bgHex('#C3D944').bold;
-const brokenChalk = chalk.bgHex('#E17687').bold;
-const totalText = chalk.hex('#40B7E1').bold;
-const uniqueText = chalk.hex('#C3D944').bold;
-const brokenText = chalk.hex('#E17687').bold;
+const totalChalk = chalk.bgHex('#F6A730').bold;
+const uniqueChalk = chalk.bgHex('#4CAB00').bold;
+const brokenChalk = chalk.bgHex('#E14C67').bold;
+const totalText = chalk.hex('#F6A730').bold;
+const uniqueText = chalk.hex('#4CAB00').bold;
+const brokenText = chalk.hex('#E14C67').bold;
+const msg = chalk.hex('#C3D944');
 const blankSpace = chalk.hidden;
 
 
@@ -27,12 +28,13 @@ function cli(filePath) {
 	mdLinks(filePath)
 		.then(completeLinks => {
 			let total = 0;
+			let unique = 0;
 			let broken = 0;
 			completeLinks.forEach(element => {
 				total++
-				if(element.status != 200){
-					broken++
-				}
+				if (element.status === 200) {
+					unique++
+				} else { broken++ }
 				//console.log(element);
 				if (!options) {
 					console.group()
@@ -66,13 +68,29 @@ function cli(filePath) {
 				}
 			});
 
-			if(process.argv.includes('--stats')) {
+			if (process.argv.includes('--stats')) {
 				console.group()
-					console.log(totalChalk(' total  '), totalText(total));
-					console.log(uniqueChalk(' unique '), uniqueText(total));
-					console.log(brokenChalk(' broken '), brokenText(broken));
-					console.log(blankSpace("blank"));
-					console.groupEnd()
+				console.log(totalChalk(' total  '), totalText(total));
+				console.log(uniqueChalk(' unique '), uniqueText(unique));
+				console.log(brokenChalk(' broken '), brokenText(broken));
+				console.log(blankSpace("blank"));
+				console.groupEnd()
+			}
+			else if(process.argv.includes('--help')){
+				console.group()
+				console.log(fileText(' Los comandos disponibles son: '));
+				console.log(blankSpace("blank"));
+				console.log(ok(' --validate '), msg('Valida los links de cada archivo markdown'));
+				console.log(blankSpace("blank"));
+				console.log(ok('   --stats  '), msg('Proporciona estadísticas del total de los links recuperados'));
+				console.log(blankSpace("blank"));
+				console.groupEnd()
+			}
+			else if(options != '--validate' && '--stats' && '--help' ) {
+				console.group()
+				console.log(msg(' No se reconoce el comando, para ver las opciones utilize el comando --help'));
+				console.log(blankSpace("blank"));
+				console.groupEnd()
 			}
 		})
 		.catch(error => console.log(error))
