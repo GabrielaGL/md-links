@@ -12,7 +12,8 @@ const statusChalk = chalk.bgHex('#C689C6').bold;
 const hrefText = chalk.hex('#E14C67').bold;
 const textText = chalk.hex('#FAB702').bold;
 const fileText = chalk.hex('#937DC2').bold;
-const statusText = chalk.hex('#FD874F').bold;
+const statusok = chalk.hex('#4CAB00').bold;
+const statusfail = chalk.hex('#C60000').bold;
 const ok = chalk.bgHex('#4CAB00').bold;
 const fail = chalk.bgHex('#C60000').bold;
 const totalChalk = chalk.bgHex('#F6A730').bold;
@@ -25,15 +26,15 @@ const msg = chalk.hex('#C3D944');
 const blankSpace = chalk.hidden;
 
 
-function cli(filePath) {
+(function cli(filePath) {
 	figlet.text('                 MDlinks', {
     font: "Big",
     horizontalLayout: "default",
     verticalLayout: "default",
     width: 80,
     whitespaceBreak: true,
-  }, function (err, data){
-		console.log(data)
+  }, function (err, ascii){
+		console.log(ascii)
 	 })
 	mdLinks(filePath)
 		.then(completeLinks => {
@@ -42,10 +43,8 @@ function cli(filePath) {
 			let broken = 0;
 			completeLinks.forEach(element => {
 				total++
-				if (element.status === 200) {
-					unique++
-				} else { broken++ }
-				//console.log(element);
+				if (element.status === 200) { unique++ } 
+				else { broken++ }
 				if (!options) {
 					console.group()
 					console.log(hrefChalk(' href '), hrefText(element.cleanLink));
@@ -60,7 +59,7 @@ function cli(filePath) {
 						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
 						console.log(textChalk(' text '), textText(element.text));
 						console.log(fileChalk(' file '), fileText(element.filePath));
-						console.log(statusChalk(' stat '), statusText(element.status));
+						console.log(statusChalk(' stat '), statusok(element.status));
 						console.log(ok('  ok  '));
 						console.log(blankSpace("blank"));
 						console.groupEnd()
@@ -70,7 +69,7 @@ function cli(filePath) {
 						console.log(hrefChalk(' href '), hrefText(element.cleanLink));
 						console.log(textChalk(' text '), textText(element.text));
 						console.log(fileChalk(' file '), fileText(element.filePath));
-						console.log(statusChalk(' stat '), statusText(element.status));
+						console.log(statusChalk(' stat '), statusfail(element.status));
 						console.log(fail(' fail '));
 						console.log(blankSpace("blank"));
 						console.groupEnd()
@@ -98,12 +97,10 @@ function cli(filePath) {
 			}
 			else if(options != '--validate' && '--stats' && '--help' ) {
 				console.group()
-				console.log(msg(' No se reconoce el comando, para ver las opciones utilize el comando --help'));
+				console.log(msg(' No se reconoce el comando. Si esta era tu intención, ignora este mensaje. Para ver las opciones utilize el comando --help'));
 				console.log(blankSpace("blank"));
 				console.groupEnd()
 			}
 		})
 		.catch(error => console.log(error))
-}
-
-cli(filePath, options);
+}) (filePath)
