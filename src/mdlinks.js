@@ -37,7 +37,7 @@ function testPath(filePath) {
 	return new Promise((resolve, reject) => {
 		fs.stat(filePath, (error, stats) => {
 			if (error) {
-				reject(console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}': ${error.code}`)));
+				reject(console.error(chalk.bold.red(`Error al comprobar la ruta '${filePath}'`)));
 			} else {
 				resolve(stats)
 			}
@@ -52,15 +52,15 @@ function testPath(filePath) {
  */
 function getFiles(filePath) {
 	return new Promise((resolve, reject) => {
-		testPath(testRelativeAbsolute(filePath))
-			.then((stats) => {
-				if (stats.isFile()) {
+		testPath(filePath)
+			.then((route) => {
+				if (route.isFile()) {
 					if (path.extname(filePath) === '.md') {
 						resolve([filePath]);
 					} else {
 						resolve([]);
 					}
-				} else if (stats.isDirectory()) {
+				} else if (route.isDirectory()) {
 					fs.readdir(filePath, (err, files) => {
 						if (err) {
 							console.error(err);
@@ -119,7 +119,7 @@ function getLinks(filePaths) {
 				return links;
 			})
 			.catch((error) => {
-				console.error(chalk.bold.red(`No se pudo leer el archivo '${file}'. Error: ${error.code}`));
+				console.error(chalk.bold.red(`No se pudo leer el archivo '${file}'`));
 				return [];
 			});
 	});
@@ -127,7 +127,8 @@ function getLinks(filePaths) {
 		.then((results) => {
 			const allLinks = results.flat();
 			return allLinks;
-		});
+		})
+		.catch((error) => console.log(error))
 }
 
 /**
@@ -172,10 +173,9 @@ function mdLinks(filePath) {
 				const result = arrLinks.filter(obj => obj !== undefined).map(obj => obj);
 				resolve(result)
 			})
-			.catch(error => reject(console.error(chalk.bold.red('Este es el error de mdlinks', error))))
+			.catch(error => reject(console.log(chalk.bold.red('No se pudo completar el análisis. Intente de nuevo', error))))
 	})
 }
 
 
-
-export { testRelativeAbsolute, testPath, mdLinks, getLinks }
+export { testRelativeAbsolute, testPath, getFiles, mdLinks, getLinks, checkLink }
