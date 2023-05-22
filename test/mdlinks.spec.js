@@ -5,7 +5,7 @@ import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import { testRelativeAbsolute, testPath, getLinks, checkLink } from './testfolder/md-links';
+import { testRelativeAbsolute, testPath, getLinks, checkLink } from '../src/mdlinks.js';
 
 console.warn = () => { };
 
