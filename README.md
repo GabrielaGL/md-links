@@ -102,6 +102,11 @@ Este comando imprime las estadísticas de cada URL en `file.md `, incluyendo las
 
 <br/>
 
+<h3> Demo Links con stats</h3>
+
+<img src="https://github.com/GabrielaGL/md-links/assets/120422565/843caa12-c454-4cd0-b3d6-948fcfb9c7ab" width="500px">
+
+
 
 ***
 
